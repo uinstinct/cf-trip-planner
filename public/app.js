@@ -141,8 +141,9 @@ function addMessage(m) {
   if (m.id != null) li.dataset.id = m.id;
   if (m.role !== "system") li.append(el("span", { className: "author", textContent: m.author }));
   li.append(m.content);
-  $("messages").append(li);
-  li.scrollIntoView({ block: "end" });
+  const list = $("messages");
+  list.append(li);
+  list.scrollTop = list.scrollHeight;
 }
 
 function renderAll() {
