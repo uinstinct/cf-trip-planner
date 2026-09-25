@@ -1,5 +1,7 @@
 # ✈️ Group Trip Planner
 
+<center><img width="1254" height="1325" alt="image" src="https://github.com/user-attachments/assets/7bbbee50-fdc8-4e23-bf83-e4bc93f92357" /></center>
+
 A multiplayer group chat on Cloudflare. While friends talk, an AI picks out everyone's travel preferences, proposes itineraries, runs a vote and announces the winner.
 
 ## How it maps to the requirements
