@@ -16,6 +16,7 @@
     <form id="join-form">
       <label>Your name <input id="name" required maxlength="32" autocomplete="nickname" /></label>
       <label>Trip code <input id="trip" pattern="[a-z0-9\-]{4,64}" placeholder="leave blank to start a new trip" /></label>
+      <button type="button" id="gen-trip" class="secondary">Generate trip code</button>
       <button type="submit">Join trip</button>
     </form>
   </section>

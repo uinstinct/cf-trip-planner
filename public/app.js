@@ -31,6 +31,8 @@ $("join-form").addEventListener("submit", (e) => {
   connect();
 });
 
+$("gen-trip").addEventListener("click", () => ($("trip").value = newTripId()));
+
 function newTripId() {
   const words = ["sunny", "alpine", "coastal", "wild", "urban", "golden", "misty", "island"];
   const pick = words[Math.floor(Math.random() * words.length)];
