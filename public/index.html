@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Group Trip Planner</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <section id="join" class="card">
+    <h1>✈️ Group Trip Planner</h1>
+    <p>Chat with your friends, let the AI collect everyone's preferences, then vote on generated itineraries.</p>
+    <form id="join-form">
+      <label>Your name <input id="name" required maxlength="32" autocomplete="nickname" /></label>
+      <label>Trip code <input id="trip" pattern="[a-z0-9\-]{4,64}" placeholder="leave blank to start a new trip" /></label>
+      <button type="submit">Join trip</button>
+    </form>
+  </section>
+
+  <main id="app" hidden>
+    <header>
+      <h1>✈️ <span id="trip-code"></span></h1>
+      <button id="copy-link" class="secondary">Copy invite link</button>
+      <span id="status" class="badge"></span>
+      <span id="conn" class="badge"></span>
+    </header>
+
+    <section id="chat">
+      <ul id="messages"></ul>
+      <form id="chat-form">
+        <input id="chat-input" autocomplete="off" maxlength="2000"
+               placeholder="Share dates, budget, ideas… mention @planner to ask the AI" />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+
+    <aside>
+      <h2>Who's here</h2>
+      <ul id="members"></ul>
+
+      <h2>What the group wants</h2>
+      <ul id="constraints"><li class="muted">Preferences will appear as you chat.</li></ul>
+
+      <button id="plan-btn">Generate itineraries</button>
+      <button id="close-btn" class="secondary" hidden>Close voting now</button>
+
+      <h2>Options</h2>
+      <div id="options"><p class="muted">No itineraries yet.</p></div>
+    </aside>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
