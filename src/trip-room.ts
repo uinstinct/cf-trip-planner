@@ -112,6 +112,14 @@ export class TripRoom extends DurableObject<Env> {
   private async handleChat(author: string, text: string): Promise<void> {
     text = text.trim().slice(0, MAX_MESSAGE_LENGTH);
     if (!text) return;
+    // Drop resubmits of the same message (double send, reconnect replay).
+    const last = this.sql
+      .exec<{ n: number }>(
+        "SELECT COUNT(*) AS n FROM messages WHERE author = ? AND content = ? AND created_at > ?",
+        author, text, Date.now() - 5000,
+      )
+      .one();
+    if (last.n) return;
     this.broadcast({ type: "message", message: this.addMessage(author, "user", text) });
 
     // Extract constraints first so an @planner reply can see them.

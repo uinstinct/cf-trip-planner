@@ -131,8 +131,12 @@ function el(tag, props = {}, ...children) {
 }
 
 function addMessage(m) {
+  if (m.id != null) {
+    if ($("messages").querySelector(`[data-id="${m.id}"]`)) return;
+  }
   const cls = m.role === "user" ? (m.author === state.name ? "me" : "") : m.role;
   const li = el("li", { className: cls });
+  if (m.id != null) li.dataset.id = m.id;
   if (m.role !== "system") li.append(el("span", { className: "author", textContent: m.author }));
   li.append(m.content);
   $("messages").append(li);
