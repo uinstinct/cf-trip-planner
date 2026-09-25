@@ -1,0 +1,32 @@
+/* Hallmark · theme: Brutal · light paper · display-heavy · warm red accent */
+:root {
+  --color-paper:   oklch(97% 0.008 95);
+  --color-paper-2: oklch(92% 0.012 95);
+  --color-ink:     oklch(16% 0 0);
+  --color-ink-2:   oklch(42% 0 0);
+  --color-rule:    oklch(16% 0 0);
+  --color-accent:  oklch(58% 0.22 28);
+  --color-on-accent: oklch(98% 0 0);
+  --color-win:     oklch(88% 0.17 125);
+  --color-focus:   oklch(55% 0.2 260);
+
+  --font-display: "Archivo Black", "Arial Black", sans-serif;
+  --font-body: "Archivo", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: .75rem; --text-sm: .875rem; --text-md: 1rem; --text-lg: 1.25rem;
+  --text-xl: 1.75rem; --text-display: clamp(2.5rem, 9vw, 5.5rem);
+
+  --space-2xs: .25rem; --space-xs: .5rem; --space-sm: .75rem; --space-md: 1rem;
+  --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
+
+  --rule-thin: 2px; --rule-thick: 4px;
+  --shadow-hard: 6px 6px 0 var(--color-ink);
+  --shadow-hard-sm: 3px 3px 0 var(--color-ink);
+  --radius-none: 0;
+
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-in: cubic-bezier(.6, 0, .8, .2);
+  --ease-in-out: cubic-bezier(.6, 0, .2, 1);
+  --dur-fast: 90ms;
+}
