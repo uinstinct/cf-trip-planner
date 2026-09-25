@@ -2,6 +2,7 @@ import type {
   ChatMessage,
   Constraint,
   ConstraintKind,
+  ItineraryDay,
   ItineraryOption,
   PlanningContext,
 } from "./types";
@@ -119,12 +120,36 @@ export async function assistantReply(
   ]);
 }
 
+type RawOption = Omit<ItineraryOption, "id" | "days"> & { days?: unknown[] };
+
+/** Llama sometimes writes "Day 1: ... Day 2: ..." into the summary instead of filling `days`. */
+function normalizeOption(o: RawOption): Omit<ItineraryOption, "id"> {
+  let days = (o.days ?? [])
+    .map((d) => (typeof d === "string" ? d : (d as ItineraryDay | null)?.plan))
+    .filter((d): d is string => typeof d === "string" && d.trim() !== "");
+  let summary = String(o.summary ?? "").trim();
+  if (!days.length) {
+    const parts = summary.split(/\s*Day \d+\s*[:\-]\s*/i);
+    if (parts.length > 1) {
+      summary = parts[0].trim();
+      days = parts.slice(1).map((p) => p.trim()).filter(Boolean);
+    }
+  }
+  return {
+    title: String(o.title ?? "").trim(),
+    destination: String(o.destination ?? "").trim(),
+    summary,
+    estimatedCostPerPerson: String(o.estimatedCostPerPerson ?? "").trim(),
+    days: days.map((plan, i) => ({ day: i + 1, plan })),
+  };
+}
+
 /** Generate three distinct itinerary options that balance everyone's constraints. */
 export async function generateItineraries(
   ai: Ai,
   ctx: PlanningContext,
 ): Promise<Omit<ItineraryOption, "id">[]> {
-  const out = await runJson<{ options?: Omit<ItineraryOption, "id">[] }>(
+  const out = await runJson<{ options?: RawOption[] }>(
     ai,
     [
       {
@@ -132,7 +157,9 @@ export async function generateItineraries(
         content:
           "You are an expert group travel planner. Propose exactly 3 distinct trip options that best satisfy " +
           "ALL members' constraints. Never violate a dealbreaker. Make the options meaningfully different " +
-          "(e.g. different destinations or styles). Keep trips 2-7 days and each day's plan to one or two sentences.",
+          "(e.g. different destinations or styles). Keep trips 2-7 days.\n" +
+          "For each option: `summary` is ONE sentence on why it suits the group; `days` is a list with one " +
+          "short string per day (e.g. \"Hike the coastal trail, seafood dinner in town\"). Do not put the day plan in the summary.",
       },
       {
         role: "user",
@@ -154,14 +181,7 @@ export async function generateItineraries(
               destination: { type: "string" },
               summary: { type: "string" },
               estimatedCostPerPerson: { type: "string" },
-              days: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: { day: { type: "number" }, plan: { type: "string" } },
-                  required: ["day", "plan"],
-                },
-              },
+              days: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 7 },
             },
             required: ["title", "destination", "summary", "estimatedCostPerPerson", "days"],
           },
@@ -170,9 +190,10 @@ export async function generateItineraries(
       required: ["options"],
     },
   );
-  const options = (out.options ?? []).filter(
-    (o) => o && o.title && o.destination && Array.isArray(o.days) && o.days.length > 0,
-  );
+  const options = (out.options ?? [])
+    .filter((o) => o && typeof o === "object")
+    .map(normalizeOption)
+    .filter((o) => o.title && o.destination && o.days.length > 0);
   // Throwing lets the Workflow step retry with backoff.
   if (options.length < 2) throw new Error(`LLM returned ${options.length} usable itineraries`);
   return options.slice(0, 3);
