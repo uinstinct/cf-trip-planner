@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "trip-planner",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "observability": { "enabled": true },
+
+  // Static frontend (chat UI)
+  "assets": { "directory": "./public" },
+
+  // Llama 3.3 via Workers AI
+  "ai": { "binding": "AI" },
+
+  // One Durable Object per trip: WebSockets + SQLite state
+  "durable_objects": {
+    "bindings": [{ "name": "TRIP_ROOM", "class_name": "TripRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TripRoom"] }],
+
+  // Itinerary generation -> voting -> reminders -> decision
+  "workflows": [
+    {
+      "name": "itinerary-workflow",
+      "binding": "ITINERARY_WORKFLOW",
+      "class_name": "ItineraryWorkflow"
+    }
+  ],
+
+  "vars": {
+    // How long to wait for votes before a reminder, then again before auto-closing.
+    "VOTE_REMINDER_AFTER": "12 hours",
+    "VOTE_CLOSE_AFTER": "12 hours"
+  }
+}
